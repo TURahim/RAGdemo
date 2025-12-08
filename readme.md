@@ -1,205 +1,329 @@
-# BookStack
+# SOP Manager
 
-[![GitHub release](https://img.shields.io/github/release/BookStackApp/BookStack.svg)](https://github.com/BookStackApp/BookStack/releases/latest)
-[![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/BookStackApp/BookStack/blob/development/LICENSE)
-[![Crowdin](https://badges.crowdin.net/bookstack/localized.svg)](https://crowdin.com/project/bookstack)
-[![Build Status](https://github.com/BookStackApp/BookStack/workflows/test-php/badge.svg)](https://github.com/BookStackApp/BookStack/actions)
-[![Lint Status](https://github.com/BookStackApp/BookStack/workflows/lint-php/badge.svg)](https://github.com/BookStackApp/BookStack/actions)
-[![php-metrics](https://img.shields.io/static/v1?label=Metrics&message=php&color=4F5B93)](https://source.bookstackapp.com/php-stats/index.html)
-<br>
-[![Alternate Source](https://img.shields.io/static/v1?label=Alt+Source&message=Git&color=ef391a&logo=git)](https://source.bookstackapp.com/)
-[![Repo Stats](https://img.shields.io/static/v1?label=GitHub+project&message=stats&color=f27e3f)](https://gh-stats.bookstackapp.com/)
-[![Discord](https://img.shields.io/static/v1?label=Discord&message=chat&color=738adb&logo=discord)](https://www.bookstackapp.com/links/discord)
-[![Mastodon](https://img.shields.io/static/v1?label=Mastodon&message=@bookstack&color=595aff&logo=mastodon)](https://www.bookstackapp.com/links/mastodon)
-<br>
-[![PeerTube](https://img.shields.io/static/v1?label=PeerTube&message=bookstack@foss.video&color=f2690d&logo=peertube)](https://foss.video/c/bookstack)
-[![YouTube](https://img.shields.io/static/v1?label=YouTube&message=bookstackapp&color=ff0000&logo=youtube)](https://www.youtube.com/bookstackapp)
+An intelligent Standard Operating Procedure (SOP) management platform with AI-powered chat assistant. Built on Laravel/PHP with a RAG (Retrieval-Augmented Generation) pipeline for natural language Q&A over your organization's documentation.
 
-A platform for storing and organising information and documentation. Details for BookStack can be found on the official website at https://www.bookstackapp.com/.
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php)
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)
 
-* [Installation Instructions](https://www.bookstackapp.com/docs/admin/installation)
-* [Documentation](https://www.bookstackapp.com/docs)
-* [Demo Instance](https://demo.bookstackapp.com)
-    * [Admin Login](https://demo.bookstackapp.com/login?email=admin@example.com&password=password)
-* [Screenshots](https://www.bookstackapp.com/#screenshots) 
-* [BookStack Blog](https://www.bookstackapp.com/blog)
-* [Issue List](https://github.com/BookStackApp/BookStack/issues)
-* [Discord Chat](https://www.bookstackapp.com/links/discord)
-* [Support Options](https://www.bookstackapp.com/support/)
+---
 
-## 🚀 Installation Quick Start
+## ✨ Features
 
-### Local development (Docker Compose)
-This repo ships with `docker-compose.yml` for the fastest local setup:
-- Copy `.env.example` to `.env`, set a 32-char `APP_KEY`, and set `APP_ENV=local`.
-- Ensure port `8080` is free (or set `DEV_PORT`).
-- Run `chgrp -R docker storage` so you keep access after the container adjusts permissions.
-- Start everything: `docker-compose up` (brings up PHP app, MySQL, MailHog, asset watcher).
-- Login at `http://localhost:8080` with `admin@admin.com` / `password`.
-- Run artisan via Docker when needed, e.g. `docker-compose run app php artisan migrate --seed`.
-- MailHog UI is at `http://localhost:8025` (override with `DEV_MAIL_PORT`).
+### Document Management
+- **Hierarchical Organization**: Departments (Shelves) → Manuals (Books) → Sections (Chapters) → SOPs (Pages)
+- **Rich Text Editor**: WYSIWYG and Markdown editing with code blocks, tables, diagrams
+- **Version Control**: Full revision history with diff view and rollback capability
+- **Approval Workflow**: Draft → Pending Review → Approved lifecycle
+- **Export Options**: PDF, HTML, Markdown, Plain Text
 
-### Production / standard install
-Follow the official guide: https://www.bookstackapp.com/docs/admin/installation
-- Requirements: PHP (with required extensions), MySQL/MariaDB, Composer, web server.
-- Clone the `release` branch, `composer install --no-dev`, copy `.env.example` → `.env` and fill DB/mail, make `storage`, `bootstrap/cache`, `public/uploads` writable, `php artisan key:generate`, `php artisan migrate`.
-- Point your web root to the `public` directory (configure rewrites if not using Apache `.htaccess`).
-- Default login after install: `admin@admin.com` / `password` (change it immediately).
+### AI-Powered Assistant
+- **Natural Language Q&A**: Ask questions about SOPs in plain English
+- **RAG Pipeline**: Answers grounded in your actual documentation, not hallucinations
+- **Citations**: Every response includes links to source documents
+- **Permission-Aware**: Users only search documents they have access to
+- **Conversation Memory**: Follow-up questions understand context
+- **Confidence Scoring**: Transparency about answer reliability
 
-## 📚 Project Definition
+### Access Control
+- **Role-Based Permissions**: Admin, Editor, Viewer roles with granular controls
+- **Department-Level Access**: Restrict visibility by organizational unit
+- **Single Sign-On**: SAML2, OIDC, LDAP, and social auth support
 
-BookStack is an opinionated documentation platform that provides a pleasant and simple out-of-the-box experience. New users to an instance should find the experience intuitive and only basic word-processing skills should be required to get involved in creating content on BookStack. The platform should provide advanced power features to those that desire it, but they should not interfere with the core simple user experience.
+---
 
-BookStack is not designed as an extensible platform to be used for purposes that differ to the statement above.
+## 🏗️ Architecture
 
-In regard to development philosophy, BookStack has a relaxed, open & positive approach. We aim to slowly yet continuously evolve the platform while providing a stable & easy upgrade path. 
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                              SOP Manager                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   ┌──────────────┐     ┌──────────────┐     ┌──────────────────────┐   │
+│   │   Frontend   │     │   Laravel    │     │   Python RAG         │   │
+│   │   (Blade +   │────▶│   Backend    │────▶│   Service            │   │
+│   │   TypeScript)│◀────│   (PHP 8.3)  │◀────│   (FastAPI)          │   │
+│   └──────────────┘     └──────────────┘     └──────────────────────┘   │
+│                               │                       │                  │
+│                               ▼                       ▼                  │
+│                        ┌──────────────┐     ┌──────────────────────┐   │
+│                        │    MySQL     │     │   Pinecone (Vector   │   │
+│                        │    Redis     │     │   DB) + OpenAI       │   │
+│                        └──────────────┘     └──────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
-You can read more about the project and its origins in [our FAQ here](https://www.bookstackapp.com/about/project-faq/).
+### Components
 
-## 🌟 Project Sponsors
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| Web App | Laravel 12 / PHP 8.3 | Document CRUD, auth, permissions, API |
+| Frontend | Blade + TypeScript | UI components, chat interface |
+| RAG Service | Python 3.11 / FastAPI | Vector search, LLM orchestration |
+| Database | MySQL 8.0 | Document storage, user data |
+| Cache/Queue | Redis | Sessions, caching, background jobs |
+| Vector Store | Pinecone | Semantic search over document embeddings |
+| LLM | OpenAI GPT-4o-mini | Answer generation |
+| Embeddings | OpenAI text-embedding-3-small | Document vectorization |
 
-Shown below are our bronze, silver and gold project sponsors.
-Big thanks to these companies for supporting the project.
-*Note: The listed services are not tested, vetted nor supported by the official BookStack project in any manner.*
+---
 
-[Project donation details](https://www.bookstackapp.com/donate/) - [GitHub Sponsors Page](https://github.com/sponsors/ssddanbrown) - [Ko-fi Page](https://ko-fi.com/ssddanbrown)
+## 🚀 Quick Start
 
-#### Gold Sponsor
+### Prerequisites
+- Docker & Docker Compose
+- OpenAI API key
+- Pinecone API key (free tier works)
 
-<table><tbody><tr>
-<td align="center"><a href="https://www.federated.computer/bookstack" target="_blank">
-    <img width="480" src="https://www.bookstackapp.com/images/sponsors/federated-computer.png" alt="Federated.computer">
-</a></td>
-</tr><tr>
-<td align="center"><a href="https://www.diagrams.net/" target="_blank">
-    <img width="480" src="https://www.bookstackapp.com/images/sponsors/diagramsnet.png" alt="Diagrams.net">
-</a></td>
-</tr>
-</tbody></table>
+### Local Development (Docker)
 
-#### Bronze Sponsors
+```bash
+# Clone the repository
+git clone https://github.com/TURahim/RAGdemo.git
+cd RAGdemo
 
-<table><tbody><tr>
-<td align="center"><a href="https://cloudabove.com/hosting" target="_blank">
-    <img width="200" src="https://www.bookstackapp.com/images/sponsors/cloudabove.png" alt="Cloudabove">
-</a></td>
-<td align="center"><a href="https://www.practicali.be" target="_blank">
-    <img width="240" src="https://www.bookstackapp.com/images/sponsors/practicali.png" alt="Practicali">
-</a></td>
-</tr><tr>
-<td align="center"><a href="https://www.stellarhosted.com/bookstack/" target="_blank">
-    <img width="240" src="https://www.bookstackapp.com/images/sponsors/stellarhosted.png" alt="Stellar Hosted">
-</a></td>
-<td align="center" style="text-align: center"><a href="https://nws.netways.de/apps/bookstack/" target="_blank">
-    <img width="240" src="https://www.bookstackapp.com/images/sponsors/netways.png" alt="NETWAYS Web Services">
-</a></td>
-</tr>
-<tr>
-<td align="center" style="text-align: center"><a href="https://www.schroeck-consulting.de/" target="_blank">
-    <img width="200" src="https://www.bookstackapp.com/images/sponsors/schroeck-consulting.png" alt="Schroeck IT Consulting">
-</a></td>
-<td align="center"><a href="https://practinet.be/" target="_blank">
-    <img width="240" src="https://www.bookstackapp.com/images/sponsors/practinet.png" alt="Practinet">
-</a></td>
-</tr>
-<tr>
-<td align="center"><a href="https://route4me.com/" target="_blank">
-    <img width="240" src="https://www.bookstackapp.com/images/sponsors/route4me.png" alt="Route4Me - Route Optimizer and Route Planner Software">
-</a></td>
-<td align="center"><a href="https://phamos.eu" target="_blank">
-    <img width="132" src="https://www.bookstackapp.com/images/sponsors/phamos.png" alt="phamos">
-</a></td>
-</tr>
-<tr>
-<td align="center"><a href="https://sitespeak.ai/bookstack" target="_blank">
-    <img width="240" src="https://www.bookstackapp.com/images/sponsors/sitespeak.png" alt="SiteSpeakAI">
-</a></td>
-<td align="center"><a href="https://www.admin-intelligence.de/bookstack/" target="_blank">
-    <img width="210" src="https://www.bookstackapp.com/images/sponsors/admin-intelligence.png" alt="Admin Intelligence">
-</a></td>
-</tr>
-</tbody></table>
+# Copy environment file
+cp .env.example .env
 
-## 🛠️ Development & Testing
+# Set required values in .env:
+# - APP_KEY (generate with: php artisan key:generate --show)
+# - OPENAI_API_KEY
+# - PINECONE_API_KEY
+# - PINECONE_INDEX=sop-assistant
 
-Please see our [development docs](dev/docs/development.md) for full details regarding work on the BookStack source code.
+# Start all services
+docker compose up -d
 
-If you're just looking to customize or extend your own BookStack instance, take a look at our [Hacking BookStack documentation page](https://www.bookstackapp.com/docs/admin/hacking-bookstack/) for details on various options to achieve this without altering the BookStack source code.
+# Run database migrations
+docker compose exec app php artisan migrate --seed
 
-Details about BookStack's versioning scheme and the general release process [can be found here](dev/docs/release-process.md).
+# Access the app
+open http://localhost:8080
+```
 
-## 🌎 Translations
+**Default Login:**
+- Email: `admin@admin.com`
+- Password: `password`
 
-Translations for text within BookStack are managed through the [BookStack project on Crowdin](https://crowdin.com/project/bookstack). Some strings have colon-prefixed variables such as `:userName`. Leave these values as they are as they will be replaced at run-time.
+> ⚠️ Change the default credentials immediately after first login.
 
-Please use [Crowdin](https://crowdin.com/project/bookstack) to contribute translations instead of opening a pull request. The translations within the working codebase can be out-of-date, and merging via code can cause conflicts & sync issues. If for some reason you can't use Crowdin feel free to open an issue to discuss alternative options. 
+### Services & Ports
 
-If you'd like a new language to be added to Crowdin, for you to be able to provide translations for, please [open a new issue here](https://github.com/BookStackApp/BookStack/issues/new?template=language_request.yml).
+| Service | Port | Description |
+|---------|------|-------------|
+| App | 8080 | Main web application |
+| RAG Service | 8001 | Python AI service |
+| MySQL | 3306 | Database |
+| Redis | 6379 | Cache & sessions |
+| MailHog | 8025 | Email testing UI |
 
-Please note, translations in BookStack are provided to the "Crowdin Global Translation Memory" which helps BookStack and other projects with finding translations. If you are not happy with contributing to this then providing translations to BookStack, even manually via GitHub, is not advised.
+---
 
-## 🎁 Contributing, Issues & Pull Requests
+## 🤖 AI Chat System
 
-Feel free to [create issues](https://github.com/BookStackApp/BookStack/issues/new/choose) to request new features or to report bugs & problems. Just please follow the template given when creating the issue.
+### How It Works
 
-Pull requests are welcome but, unless it's a small tweak, it may be best to open the pull request early or create an issue for your intended change to discuss how it will fit into the project and plan out the merge. Just because a feature request exists, or is tagged, does not mean that feature would be accepted into the core project.
+1. **User asks a question** via the chat interface
+2. **Permission check** — System identifies which documents the user can access
+3. **Vector search** — Query is embedded and matched against document chunks in Pinecone
+4. **Context retrieval** — Top matching chunks are pulled with metadata
+5. **LLM generation** — OpenAI generates an answer using the retrieved context
+6. **Response with citations** — User receives answer with links to source documents
 
-Pull requests should be created from the `development` branch since they will be merged back into `development` once done. Please do not build from or request a merge into the `release` branch as this is only for publishing releases. If you are looking to alter CSS or JavaScript content please edit the source files found in `resources/`. Any CSS or JS files within `public` are built from these source files and therefore should not be edited directly.
+### RAG Pipeline
 
-The project's code of conduct [can be found here](https://github.com/BookStackApp/BookStack/blob/development/.github/CODE_OF_CONDUCT.md).
+```
+Question: "What's the procedure for equipment calibration?"
+                    │
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│ 1. Embed query using text-embedding-3-small                    │
+│ 2. Search Pinecone for similar document chunks                 │
+│ 3. Filter by user's permitted document IDs                     │
+│ 4. Retrieve top-k chunks (default: 5)                          │
+│ 5. Construct prompt with system instructions + context         │
+│ 6. Generate answer via GPT-4o-mini                             │
+│ 7. Extract citations and confidence score                      │
+└────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+Answer: "According to SOP-MFG-001, equipment calibration requires..."
+[📄 Source: Equipment Calibration Procedure - Manufacturing Operations]
+```
+
+### Configuration
+
+AI settings are controlled via environment variables:
+
+```bash
+# Master toggle
+AI_ENABLED=true
+
+# OpenAI
+OPENAI_API_KEY=sk-...
+OPENAI_CHAT_MODEL=gpt-4o-mini
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+OPENAI_TEMPERATURE=0.3
+OPENAI_MAX_TOKENS=1024
+
+# Pinecone
+PINECONE_API_KEY=...
+PINECONE_INDEX=sop-assistant
+
+# RAG Settings
+AI_CHUNK_SIZE=500          # Tokens per chunk
+AI_CHUNK_OVERLAP=50        # Overlap between chunks
+AI_RETRIEVAL_TOP_K=5       # Number of chunks to retrieve
+AI_SCORE_THRESHOLD=0.3     # Minimum similarity score
+
+# Rate Limiting
+AI_RATE_LIMIT_PER_MINUTE=10
+AI_RATE_LIMIT_PER_DAY=100
+```
+
+---
+
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── AI/                    # AI chat system
+│   │   ├── Controllers/       # Chat API endpoints
+│   │   ├── Jobs/              # Background indexing jobs
+│   │   ├── Models/            # Conversation, Message, IndexStatus
+│   │   └── Services/          # Chat logic, document chunking
+│   ├── Entities/              # Books, Chapters, Pages (SOPs)
+│   ├── Permissions/           # RBAC system
+│   └── Users/                 # User management
+│
+├── python/
+│   └── rag_service/           # Python RAG microservice
+│       ├── main.py            # FastAPI application
+│       ├── chain.py           # RAG pipeline orchestration
+│       ├── retriever.py       # Pinecone search
+│       ├── memory.py          # Conversation history
+│       └── prompts.py         # System prompts
+│
+├── resources/
+│   ├── js/                    # TypeScript frontend
+│   │   └── components/        # UI components including chat
+│   ├── views/                 # Blade templates
+│   └── sass/                  # Stylesheets
+│
+├── docker-compose.yml         # Local development stack
+└── docker-compose.prod.yml    # Production configuration
+```
+
+---
 
 ## 🔒 Security
 
-Security information for administering a BookStack instance can be found on the [documentation site here](https://www.bookstackapp.com/docs/admin/security/).
+- **Permission-based search filtering** — Users only query documents they can view
+- **Authentication required** — All AI endpoints require login
+- **Rate limiting** — Configurable per-user limits
+- **Session isolation** — Conversation histories are user-scoped
+- **No training on your data** — OpenAI API does not train on API inputs
 
-If you'd like to be notified of new potential security concerns you can [sign-up to the BookStack security mailing list](https://updates.bookstackapp.com/signup/bookstack-security-updates).
+---
 
-If you would like to report a security concern, details of doing so [can be found here](https://github.com/BookStackApp/BookStack/blob/development/.github/SECURITY.md).
+## 📖 Documentation
 
-## ♿ Accessibility
+- [AI Implementation Details](./READMEAI.md) — Deep dive into the RAG architecture
+- [Development Guide](./dev/docs/development.md) — Setting up a dev environment
+- [API Documentation](./dev/docs/api.md) — REST API reference
 
-We want BookStack to remain accessible to as many people as possible. We aim for at least WCAG 2.1 Level A standards where possible although we do not strictly test this upon each release. If you come across any accessibility issues please feel free to open an issue.
+---
 
-## 🖥️ Website, Docs & Blog
+## 🛠️ Development
 
-The website which contains the project docs & blog can be found in the [BookStackApp/website](https://codeberg.org/bookstack/website) repo.
+### Running Tests
 
-## ⚖️ License
+```bash
+# PHP tests
+docker compose exec app php artisan test
 
-The BookStack source is provided under the [MIT License](https://github.com/BookStackApp/BookStack/blob/development/LICENSE). 
+# JavaScript tests
+docker compose exec node npm test
+```
 
-The libraries used by, and included with, BookStack are provided under their own licenses and copyright.
-The licenses for many of our core dependencies can be found in the attribution list below but this is not an exhaustive list of all projects used within BookStack. 
+### Building Assets
 
-## 👪 Attribution
+```bash
+# Development (with watch)
+docker compose exec node npm run dev
 
-The great people that have worked to build and improve BookStack can [be seen here](https://github.com/BookStackApp/BookStack/graphs/contributors). The wonderful people that have provided translations, either through GitHub or via Crowdin [can be seen here](https://github.com/BookStackApp/BookStack/blob/development/.github/translators.txt).
+# Production build
+docker compose exec node npm run build
+```
 
-Below are the great open-source projects used to help build BookStack. 
-Note: This is not an exhaustive list of all libraries and projects that would be used in an active BookStack instance.
+### Artisan Commands
 
-* [Laravel](http://laravel.com/) - _[MIT](https://github.com/laravel/framework/blob/v8.82.0/LICENSE.md)_
-* [TinyMCE](https://www.tinymce.com/) - _[MIT](https://github.com/tinymce/tinymce/blob/develop/LICENSE.TXT)_
-* [Lexical](https://lexical.dev/) - _[MIT](https://github.com/facebook/lexical/blob/main/LICENSE)_
-* [CodeMirror](https://codemirror.net) - _[MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE)_
-* [Sortable](https://github.com/SortableJS/Sortable) - _[MIT](https://github.com/SortableJS/Sortable/blob/master/LICENSE)_
-* [Google Material Icons](https://github.com/google/material-design-icons) - _[Apache-2.0](https://github.com/google/material-design-icons/blob/master/LICENSE)_
-* [markdown-it](https://github.com/markdown-it/markdown-it) and [markdown-it-task-lists](https://github.com/revin/markdown-it-task-lists) - _[MIT](https://github.com/markdown-it/markdown-it/blob/master/LICENSE) and [ISC](https://github.com/revin/markdown-it-task-lists/blob/master/LICENSE)_
-* [Dompdf](https://github.com/dompdf/dompdf) - _[LGPL v2.1](https://github.com/dompdf/dompdf/blob/master/LICENSE.LGPL)_
-* [KnpLabs/snappy](https://github.com/KnpLabs/snappy) - _[MIT](https://github.com/KnpLabs/snappy/blob/master/LICENSE)_
-* [WKHTMLtoPDF](http://wkhtmltopdf.org/index.html) - _[LGPL v3.0](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/LICENSE)_
-* [diagrams.net](https://github.com/jgraph/drawio) - _[Embedded Version Terms](https://www.diagrams.net/trust/) / [Source Project - Apache-2.0](https://github.com/jgraph/drawio/blob/dev/LICENSE)_
-* [SAML PHP Toolkit](https://github.com/SAML-Toolkits/php-saml) - _[MIT](https://github.com/SAML-Toolkits/php-saml/blob/master/LICENSE)_
-* [League/CommonMark](https://commonmark.thephpleague.com/) - _[BSD-3-Clause](https://github.com/thephpleague/commonmark/blob/2.2/LICENSE)_
-* [League/Flysystem](https://flysystem.thephpleague.com) - _[MIT](https://github.com/thephpleague/flysystem/blob/3.x/LICENSE)_
-* [League/html-to-markdown](https://github.com/thephpleague/html-to-markdown) - _[MIT](https://github.com/thephpleague/html-to-markdown/blob/master/LICENSE)_
-* [League/oauth2-client](https://oauth2-client.thephpleague.com/) - _[MIT](https://github.com/thephpleague/oauth2-client/blob/master/LICENSE)_
-* [pragmarx/google2fa](https://github.com/antonioribeiro/google2fa) - _[MIT](https://github.com/antonioribeiro/google2fa/blob/8.x/LICENSE.md)_
-* [Bacon/BaconQrCode](https://github.com/Bacon/BaconQrCode) - _[BSD-2-Clause](https://github.com/Bacon/BaconQrCode/blob/master/LICENSE)_
-* [phpseclib](https://github.com/phpseclib/phpseclib) - _[MIT](https://github.com/phpseclib/phpseclib/blob/master/LICENSE)_
-* [Clockwork](https://github.com/itsgoingd/clockwork) - _[MIT](https://github.com/itsgoingd/clockwork/blob/master/LICENSE)_
-* [PHPStan](https://phpstan.org/) & [Larastan](https://github.com/nunomaduro/larastan) - _[MIT](https://github.com/phpstan/phpstan/blob/master/LICENSE) and [MIT](https://github.com/nunomaduro/larastan/blob/master/LICENSE.md)_
-* [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) - _[BSD 3-Clause](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt)_
-* [JakeArchibald/IDB-Keyval](https://github.com/jakearchibald/idb-keyval) - _[Apache-2.0](https://github.com/jakearchibald/idb-keyval/blob/main/LICENCE)_
+```bash
+# Run migrations
+docker compose exec app php artisan migrate
 
-For a detailed breakdown of the JavaScript & PHP projects imported & used via NPM & composer package managers, along with their licenses, please see the [dev/licensing/js-library-licenses.txt](dev/licensing/js-library-licenses.txt) and [dev/licensing/php-library-licenses.txt](dev/licensing/php-library-licenses.txt) files. 
+# Seed demo data
+docker compose exec app php artisan db:seed --class=MedtechSOPSeeder
+
+# Clear caches
+docker compose exec app php artisan cache:clear
+docker compose exec app php artisan config:clear
+```
+
+---
+
+## 🚢 Production Deployment
+
+See [deploylightsail.md](./deploylightsail.md) for AWS Lightsail deployment instructions.
+
+### Quick Production Setup
+
+```bash
+# On your server
+git clone https://github.com/TURahim/RAGdemo.git ~/app
+cd ~/app
+
+# Configure environment
+cp .env.example .env
+# Edit .env with production values
+
+# Start with production compose
+docker compose -f docker-compose.prod.yml up -d
+
+# Run migrations
+docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
+```
+
+### Environment Checklist
+
+- [ ] `APP_ENV=production`
+- [ ] `APP_DEBUG=false`
+- [ ] `APP_URL=https://your-domain.com`
+- [ ] Strong `APP_KEY` generated
+- [ ] Database credentials set
+- [ ] Redis configured
+- [ ] OpenAI & Pinecone API keys set
+- [ ] SSL/TLS configured (via nginx/certbot)
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License — see [LICENSE](./LICENSE) for details.
+
+---
+
+## 🙏 Acknowledgments
+
+Built on the excellent [BookStack](https://www.bookstackapp.com/) documentation platform, extended with AI capabilities for intelligent SOP management.
+
+### Key Dependencies
+
+- [Laravel](https://laravel.com/) — PHP web framework
+- [FastAPI](https://fastapi.tiangolo.com/) — Python API framework
+- [Pinecone](https://www.pinecone.io/) — Vector database
+- [OpenAI](https://openai.com/) — LLM and embeddings
+- [TinyMCE](https://www.tiny.cloud/) — Rich text editor
+- [Lexical](https://lexical.dev/) — Modern text editor
