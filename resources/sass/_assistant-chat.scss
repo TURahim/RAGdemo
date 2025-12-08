@@ -1,0 +1,515 @@
+@use "vars";
+@use "mixins";
+
+// Full-page Assistant Chat - ChatGPT-style interface
+// ============================================================================
+
+// Body class to remove default layout padding
+body.assistant-page {
+  .content {
+    padding: 0 !important;
+  }
+  #main-content {
+    overflow: hidden;
+  }
+}
+
+// Main container - full viewport height
+.assistant-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px); // Account for header
+  max-width: 100%;
+  @include mixins.lightDark(background-color, #ffffff, #1a1a1a);
+}
+
+// Messages area - scrollable
+.assistant-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: vars.$xl 0;
+  scroll-behavior: smooth;
+}
+
+// Empty state - centered welcome screen
+.assistant-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: vars.$xl;
+  animation: fadeIn 0.3s ease;
+
+  &.hidden {
+    display: none;
+  }
+
+  .assistant-logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: vars.$l;
+    @include mixins.lightDark(background-color, #f0f0f0, #2d2d2d);
+    
+    .svg-icon {
+      width: 36px;
+      height: 36px;
+      @include mixins.lightDark(fill, #666, #aaa);
+    }
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0 0 vars.$s;
+    @include mixins.lightDark(color, #1a1a1a, #f0f0f0);
+  }
+
+  p {
+    font-size: 1rem;
+    max-width: 480px;
+    margin: 0 0 vars.$xl;
+    line-height: 1.6;
+    @include mixins.lightDark(color, #666, #999);
+  }
+}
+
+// Suggestion buttons
+.assistant-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$s;
+  justify-content: center;
+  max-width: 650px;
+}
+
+.assistant-suggestion {
+  padding: vars.$s vars.$m;
+  border-radius: 20px;
+  border: 1px solid;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  @include mixins.lightDark(background-color, #f7f7f7, #2d2d2d);
+  @include mixins.lightDark(border-color, #e0e0e0, #404040);
+  @include mixins.lightDark(color, #333, #ddd);
+
+  &:hover {
+    @include mixins.lightDark(background-color, #e8e8e8, #3d3d3d);
+    @include mixins.lightDark(border-color, #d0d0d0, #505050);
+  }
+}
+
+// Individual message styling
+.assistant-message {
+  display: flex;
+  flex-direction: column;
+  padding: vars.$s vars.$m;
+  max-width: 800px;
+  margin: 0 auto vars.$m;
+  animation: slideIn 0.2s ease;
+
+  // User messages - right aligned
+  &.assistant-message-user {
+    align-items: flex-end;
+
+    .assistant-message-bubble {
+      @include mixins.lightDark(background-color, #0057FF, #0066FF);
+      color: #ffffff;
+      border-radius: 18px 18px 4px 18px;
+      max-width: 70%;
+    }
+
+    .assistant-message-time {
+      text-align: right;
+    }
+  }
+
+  // Assistant messages - left aligned
+  &.assistant-message-assistant {
+    align-items: flex-start;
+
+    .assistant-message-bubble {
+      @include mixins.lightDark(background-color, #f7f7f7, #2d2d2d);
+      @include mixins.lightDark(color, #1a1a1a, #f0f0f0);
+      border-radius: 18px 18px 18px 4px;
+      max-width: 85%;
+    }
+  }
+}
+
+// Message bubble
+.assistant-message-bubble {
+  padding: vars.$m vars.$l;
+  line-height: 1.6;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+// Message content
+.assistant-message-content {
+  font-size: 0.9375rem;
+
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+}
+
+// Timestamp
+.assistant-message-time {
+  font-size: 0.75rem;
+  margin-top: vars.$xs;
+  padding: 0 vars.$xs;
+  @include mixins.lightDark(color, #999, #666);
+}
+
+// Citations
+.assistant-citations {
+  margin-top: vars.$m;
+  padding-top: vars.$s;
+  font-size: 0.8125rem;
+  border-top: 1px solid;
+  @include mixins.lightDark(border-color, #e0e0e0, #404040);
+}
+
+.assistant-citations-label {
+  font-weight: 600;
+  margin-bottom: vars.$xs;
+  @include mixins.lightDark(color, #555, #bbb);
+}
+
+.assistant-citations-list {
+  list-style: none;
+  padding: 0;
+  margin: vars.$xs 0 0 0;
+}
+
+.assistant-citation-item {
+  display: flex;
+  align-items: center;
+  gap: vars.$xs;
+  padding: vars.$xs 0;
+  border-bottom: 1px solid;
+  @include mixins.lightDark(border-color, #f0f0f0, #333);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.assistant-citation-rank {
+  font-weight: 700;
+  font-size: 0.75rem;
+  min-width: 24px;
+  @include mixins.lightDark(color, #888, #777);
+}
+
+.assistant-citation-link {
+  flex: 1;
+  color: var(--color-link);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.assistant-citation-text {
+  flex: 1;
+  @include mixins.lightDark(color, #666, #aaa);
+}
+
+.assistant-citation-score {
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 45px;
+  text-align: center;
+
+  &.assistant-citation-score-high {
+    @include mixins.lightDark(background-color, #d4edda, #1a4d2e);
+    @include mixins.lightDark(color, #155724, #7ed99d);
+  }
+
+  &.assistant-citation-score-medium {
+    @include mixins.lightDark(background-color, #fff3cd, #4d3a00);
+    @include mixins.lightDark(color, #856404, #ffc107);
+  }
+
+  &.assistant-citation-score-low {
+    @include mixins.lightDark(background-color, #f8d7da, #4d1a1f);
+    @include mixins.lightDark(color, #721c24, #f5a3a8);
+  }
+}
+
+// Confidence indicator
+.assistant-confidence {
+  margin-top: vars.$s;
+  font-size: 0.75rem;
+  @include mixins.lightDark(color, #888, #777);
+
+  .assistant-confidence-value {
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+
+    &.assistant-confidence-high {
+      @include mixins.lightDark(background-color, #d4edda, #1a4d2e);
+      @include mixins.lightDark(color, #155724, #7ed99d);
+    }
+
+    &.assistant-confidence-medium {
+      @include mixins.lightDark(background-color, #fff3cd, #4d3a00);
+      @include mixins.lightDark(color, #856404, #ffc107);
+    }
+
+    &.assistant-confidence-low {
+      @include mixins.lightDark(background-color, #f8d7da, #4d1a1f);
+      @include mixins.lightDark(color, #721c24, #f5a3a8);
+    }
+  }
+}
+
+// Feedback
+.assistant-feedback {
+  margin-top: vars.$s;
+  display: flex;
+  align-items: center;
+  gap: vars.$xs;
+
+  .assistant-feedback-label {
+    font-size: 0.75rem;
+    @include mixins.lightDark(color, #888, #777);
+  }
+}
+
+.assistant-feedback-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 1rem;
+  opacity: 0.6;
+  transition: all 0.15s ease;
+
+  &:hover {
+    opacity: 1;
+    @include mixins.lightDark(background-color, #e0e0e0, #404040);
+  }
+}
+
+.assistant-feedback-thanks {
+  font-size: 0.75rem;
+  font-style: italic;
+  @include mixins.lightDark(color, #666, #999);
+}
+
+// Input area - sticky bottom
+.assistant-input-area {
+  padding: vars.$m vars.$xl vars.$xl;
+  @include mixins.lightDark(background-color, #ffffff, #1a1a1a);
+  border-top: 1px solid;
+  @include mixins.lightDark(border-color, #eee, #333);
+}
+
+.assistant-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: vars.$s;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: vars.$s vars.$m;
+  border-radius: 24px;
+  border: 2px solid;
+  @include mixins.lightDark(background-color, #f7f7f7, #2d2d2d);
+  @include mixins.lightDark(border-color, #e0e0e0, #404040);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    @include mixins.lightDark(border-color, #0057FF, #0066FF);
+    box-shadow: 0 0 0 3px rgba(0, 87, 255, 0.1);
+  }
+
+  textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: vars.$xs 0;
+    min-height: 24px;
+    max-height: 150px;
+    @include mixins.lightDark(color, #1a1a1a, #f0f0f0);
+
+    &::placeholder {
+      @include mixins.lightDark(color, #999, #666);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+// Send button
+.assistant-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  @include mixins.lightDark(background-color, #0057FF, #0066FF);
+
+  .svg-icon {
+    width: 18px;
+    height: 18px;
+    fill: #ffffff;
+  }
+
+  &:hover:not(:disabled) {
+    @include mixins.lightDark(background-color, #0047DD, #0055DD);
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// Input hint
+.assistant-input-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: vars.$m;
+  max-width: 800px;
+  margin: vars.$xs auto 0;
+  font-size: 0.75rem;
+  @include mixins.lightDark(color, #999, #666);
+
+  kbd {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    @include mixins.lightDark(background-color, #eee, #333);
+    @include mixins.lightDark(border, 1px solid #ddd, 1px solid #444);
+  }
+}
+
+// Typing indicator
+.assistant-typing-indicator {
+  display: none;
+  align-items: center;
+  gap: 4px;
+
+  &.visible {
+    display: flex;
+  }
+
+  span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out;
+    @include mixins.lightDark(background-color, #0057FF, #0066FF);
+
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0s;
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: vars.$bp-m) {
+  .assistant-chat-container {
+    height: calc(100vh - 50px);
+  }
+
+  .assistant-message {
+    padding: vars.$xs vars.$s;
+
+    .assistant-message-bubble {
+      max-width: 90% !important;
+    }
+  }
+
+  .assistant-input-area {
+    padding: vars.$s vars.$m vars.$m;
+  }
+
+  .assistant-empty-state {
+    padding: vars.$m;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .assistant-suggestions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .assistant-suggestion {
+    text-align: left;
+  }
+}
+
